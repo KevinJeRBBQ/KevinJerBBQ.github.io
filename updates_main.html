@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Actualizaciones relevantes de IT Operations para Digital & Technology." />
+  <title>Updates | IT Operations</title>
+  <link rel="stylesheet" href="https://kevinjerbbq.github.io/coms.css" />
+  <style>
+    :root {
+      --updates-blue: #126fba;
+      --updates-blue-dark: #0d4269;
+      --soft-blue: #edf7ff;
+      --soft-red: #fff1f2;
+      --soft-gold: #fff9ec;
+    }
+
+    body { min-width: 320px; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(5, 59, 42, 0.08);
+    }
+
+    .topbar-inner {
+      width: min(var(--max-width), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .topbar-brand {
+      font-weight: 900;
+      color: var(--green-900);
+      letter-spacing: .01em;
+      white-space: nowrap;
+    }
+
+    .topbar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .topbar .btn {
+      min-height: 38px;
+      padding: 8px 13px;
+      font-size: .9rem;
+    }
+
+    .topbar .btn-secondary {
+      color: var(--green-900);
+      background: var(--green-050);
+      border-color: rgba(0, 130, 0, .12);
+    }
+
+    .topbar .btn-primary {
+      color: var(--white);
+      background: var(--green-800);
+      box-shadow: none;
+    }
+
+    .updates-hero {
+      background: linear-gradient(135deg, var(--green-900) 0%, #07553b 46%, var(--updates-blue-dark) 100%);
+    }
+
+    .updates-hero::after { background: rgba(18, 111, 186, .24); }
+
+    .updates-hero .hero-stat:first-child strong { color: #8ed2ff; }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-chip {
+      border: 1px solid rgba(0, 130, 0, .13);
+      background: #fff;
+      color: var(--ink-700);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-weight: 800;
+      font-size: .86rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-chip:hover,
+    .filter-chip.active {
+      background: var(--green-800);
+      color: #fff;
+      border-color: var(--green-800);
+      transform: translateY(-1px);
+    }
+
+    .update-count {
+      color: var(--ink-500);
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(310px, 1.08fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .featured-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--green-050);
+      border: 1px solid rgba(0, 130, 0, .1);
+      color: var(--green-800);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .meta-chip.blue { background: var(--soft-blue); border-color: rgba(18,111,186,.14); color: var(--updates-blue); }
+    .meta-chip.gold { background: var(--soft-gold); border-color: rgba(200,162,77,.24); color: #80601a; }
+
+    .update-title {
+      margin: 0;
+      font-size: clamp(1.6rem, 2.5vw, 2.35rem);
+      line-height: 1.08;
+      color: var(--green-900);
+    }
+
+    .update-lead {
+      color: var(--ink-500);
+      font-size: 1.02rem;
+      max-width: 760px;
+    }
+
+    .impact-box {
+      padding: 16px;
+      border-left: 5px solid var(--updates-blue);
+      border-radius: 0 16px 16px 0;
+      background: linear-gradient(90deg, var(--soft-blue), #fff);
+    }
+
+    .impact-box h3 {
+      margin-bottom: 6px;
+      font-size: 1rem;
+      color: var(--updates-blue-dark);
+    }
+
+    .impact-box p { color: var(--ink-700); }
+
+    .feature-image-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+      border-radius: 22px;
+      overflow: hidden;
+      background: linear-gradient(145deg, #0c496f, #093c65);
+      border: 1px solid rgba(18, 111, 186, .16);
+      box-shadow: 0 16px 34px rgba(5, 59, 42, .12);
+    }
+
+    .feature-image-wrap img {
+      display: block;
+      width: 100%;
+      max-height: 690px;
+      object-fit: contain;
+      background: #fff;
+    }
+
+    .image-caption {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      color: #fff;
+      background: rgba(5, 59, 42, .86);
+      backdrop-filter: blur(8px);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .update-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .update-card {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      min-height: 100%;
+      padding: 20px;
+      border: 1px solid rgba(0, 130, 0, .1);
+      border-radius: 22px;
+      background: linear-gradient(180deg, #fff, #f6fbf8);
+      box-shadow: 0 10px 22px rgba(5, 59, 42, .05);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .update-card:hover { transform: translateY(-3px); box-shadow: 0 18px 34px rgba(5, 59, 42, .11); }
+
+    .update-card.hidden { display: none; }
+
+    .update-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .update-card h3 {
+      font-size: 1.14rem;
+      color: var(--green-900);
+      margin: 0;
+    }
+
+    .update-card .muted { flex: 1; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .status-live { color: var(--green-800); background: rgba(0,130,0,.11); }
+    .status-reference { color: #7a5c18; background: rgba(200,162,77,.17); }
+    .status-pending { color: var(--updates-blue); background: rgba(18,111,186,.1); }
+
+    .doc-list {
+      display: grid;
+      gap: 9px;
+      margin-top: auto;
+    }
+
+    .doc-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 130, 0, .1);
+      background: #fff;
+      color: var(--green-800);
+      font-weight: 800;
+      font-size: .9rem;
+      transition: var(--transition);
+    }
+
+    .doc-link:hover { border-color: rgba(0,130,0,.33); background: var(--green-050); }
+    .doc-link[aria-disabled="true"] { opacity: .7; cursor: not-allowed; }
+
+    .read-more { color: var(--green-800); font-weight: 900; font-size: .9rem; }
+
+    .timeline {
+      display: grid;
+      gap: 0;
+      margin-top: 18px;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 116px 22px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      padding: 14px 0;
+      border-top: 1px solid rgba(5,59,42,.08);
+    }
+
+    .timeline-row:first-child { border-top: 0; padding-top: 0; }
+    .timeline-date { color: var(--ink-500); font-size: .86rem; font-weight: 800; }
+    .timeline-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--green-600); box-shadow: 0 0 0 5px rgba(0,130,0,.1); margin-top: 3px; }
+    .timeline-row h4 { margin-bottom: 3px; color: var(--green-900); }
+    .timeline-row p { color: var(--ink-500); font-size: .93rem; }
+
+    .publisher-note {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--green-900), var(--green-800));
+      color: #fff;
+    }
+
+    .publisher-note p { color: rgba(255,255,255,.83); margin-top: 7px; }
+
+    .publisher-note code {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 7px 9px;
+      border-radius: 9px;
+      color: #fff;
+      background: rgba(255,255,255,.1);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .82rem;
+    }
+
+    .footer-note {
+      text-align: center;
+      padding: 8px 0 0;
+      color: var(--ink-500);
+      font-size: .86rem;
+    }
+
+    @media (max-width: 880px) {
+      .featured-grid { grid-template-columns: 1fr; }
+      .update-grid { grid-template-columns: 1fr; }
+      .feature-image-wrap { min-height: auto; }
+    }
+
+    @media (max-width: 660px) {
+      .topbar-inner { padding: 10px 0; align-items: flex-start; flex-direction: column; }
+      .topbar-nav { width: 100%; justify-content: flex-start; }
+      .topbar .btn { min-height: 36px; padding: 7px 10px; }
+      .shell { width: min(var(--max-width), calc(100% - 22px)); padding-top: 18px; }
+      .hero { padding: 23px; border-radius: 25px; }
+      .hero-highlight-row { grid-template-columns: 1fr; }
+      .section-card { padding: 20px; border-radius: 24px; }
+      .timeline-row { grid-template-columns: 86px 18px minmax(0,1fr); gap: 9px; }
+      .image-caption { position: static; border-radius: 0; width: 100%; }
+      .feature-image-wrap { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-brand">IT Operations · Updates</div>
+      <nav class="topbar-nav" aria-label="Navegación de updates">
+        <a class="btn btn-secondary" href="#featured-update">Destacado</a>
+        <a class="btn btn-secondary" href="#all-updates">Actualizaciones</a>
+        <a class="btn btn-secondary" href="#reference-library">Documentación</a>
+        <a class="btn btn-primary" href="https://kevinjerbbq.github.io/">← Back to Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero updates-hero">
+      <div class="hero-glow"></div>
+      <div class="hero-gridlines"></div>
+      <div class="hero-grid">
+        <div>
+          <div class="brand-pill"><span class="star">★</span> HEINEKEN México · Digital &amp; Technology · IT Operations</div>
+          <h1>Updates</h1>
+          <p class="hero-copy">
+            Fuente central para comunicar cambios operativos, nuevos lineamientos, documentación de proceso y avisos que requieren visibilidad dentro de D&amp;T.
+          </p>
+          <div class="hero-ribbon">● Comunicación clara · Cambios visibles · Referencias disponibles</div>
+          <div class="hero-highlight-row">
+            <div class="hero-chip"><strong>Critical updates</strong><span>Cambios que requieren atención o adaptación.</span></div>
+            <div class="hero-chip"><strong>Process references</strong><span>Documentación operativa y guías de consulta.</span></div>
+            <div class="hero-chip"><strong>Single source</strong><span>Un lugar para encontrar el contexto y la acción.</span></div>
+          </div>
+          <div class="hero-actions">
+            <a href="#featured-update" class="btn btn-primary">Ver actualización destacada</a>
+            <a href="#all-updates" class="btn btn-secondary">Explorar todas</a>
+          </div>
+        </div>
+
+        <div class="hero-panel">
+          <div class="hero-stat"><strong>01</strong><span>Actualización destacada publicada para D&amp;T.</span></div>
+          <div class="hero-stat"><strong>03</strong><span>Documentos de referencia operativa disponibles para Material Ledger.</span></div>
+          <div class="hero-stat"><strong>1 hub</strong><span>Una fuente clara para cambios, contexto y próximos pasos.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card" id="featured-update">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">Featured update</div>
+          <h2 class="section-title">Nueva Matriz de Prioridad de Incidentes</h2>
+          <p class="section-subtitle">Cambio en el modelo que D&amp;T utilizará para evaluar y asignar la prioridad de los tickets generados por incidentes reportados en sistemas y plataformas.</p>
+        </div>
+        <div class="pill pill-alert">● Atención requerida</div>
+      </div>
+
+      <div class="featured-grid">
+        <div class="featured-copy">
+          <div class="meta-row">
+            <span class="meta-chip blue">↻ Gestión de incidentes</span>
+            <span class="meta-chip gold">Actualización de proceso</span>
+            <span class="meta-chip">Audiencia: usuarios D&amp;T</span>
+          </div>
+
+          <h3 class="update-title">La prioridad ahora se determinará con una vista más completa del impacto.</h3>
+          <p class="update-lead">
+            La nueva matriz evalúa los incidentes mediante cinco factores para determinar el nivel de atención requerido y asegurar una respuesta consistente con el impacto real para la operación y el negocio.
+          </p>
+
+          <div class="section-banner" style="grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 0;">
+            <div class="banner-card"><strong>1 · Impacto en el negocio</strong><span>Tipo de impacto que genera el incidente en el negocio.</span></div>
+            <div class="banner-card"><strong>2 · Magnitud</strong><span>Cantidad de usuarios u órdenes afectadas.</span></div>
+            <div class="banner-card"><strong>3 · Umbral de tolerancia</strong><span>Tiempo que el negocio puede operar con el problema.</span></div>
+            <div class="banner-card"><strong>4 · Criticidad del servicio</strong><span>Importancia del servicio afectado para la operación.</span></div>
+            <div class="banner-card" style="grid-column: 1 / -1;"><strong>5 · OpCo impactada</strong><span>Número y tipo de compañías operativas impactadas por el incidente.</span></div>
+          </div>
+
+          <div class="impact-box">
+            <h3>¿Qué cambia para mí?</h3>
+            <p>Continúa reportando incidentes por el canal habitual. Service Desk realizará las preguntas necesarias; el formulario tendrá algunos ajustes, pero seguirás proporcionando esencialmente la misma información. Los incidentes P1 recibirán atención personalizada y serán validados por Major Incident Managers.</p>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-chip">📅 Fecha de publicación: por confirmar</span>
+            <span class="meta-chip">👤 Owner / contacto: por confirmar</span>
+          </div>
+        </div>
+
+        <figure class="feature-image-wrap">
+          <img src="assets/updates/matrizprioridadincidentes.png" alt="Comunicado visual de la Nueva Matriz de Prioridad de Incidentes" />
+          <figcaption class="image-caption">Comunicado visual de la Nueva Matriz de Prioridad de Incidentes.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section-card" id="all-updates">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">All updates</div>
+          <h2 class="section-title">Actualizaciones y referencias operativas</h2>
+          <p class="section-subtitle">Consulta el cambio activo y la documentación que puede apoyar la operación, análisis y seguimiento de procesos.</p>
+        </div>
+        <div class="pill pill-success">● Updates hub active</div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-group" role="group" aria-label="Filtrar actualizaciones">
+          <button class="filter-chip active" type="button" data-filter="all">Todos</button>
+          <button class="filter-chip" type="button" data-filter="incident">Incidentes</button>
+          <button class="filter-chip" type="button" data-filter="finance">Finanzas / SAP</button>
+          <button class="filter-chip" type="button" data-filter="reference">Documentación</button>
+        </div>
+        <div class="update-count" id="updateCount">3 elementos visibles</div>
+      </div>
+
+      <div class="update-grid" id="updatesGrid">
+        <article class="update-card" data-category="incident">
+          <div class="update-card-top">
+            <div>
+              <div class="meta-row" style="margin-bottom: 9px;"><span class="meta-chip blue">Incidentes</span><span class="meta-chip">Actualización de proceso</span></div>
+              <h3>Nueva Matriz de Prioridad de Incidentes</h3>
+            </div>
+            <span class="status-pill status-live">● Activo</span>
+          </div>
+          <p class="muted">Nuevo modelo de evaluación basado en impacto al negocio, magnitud, tolerancia, criticidad del servicio y OpCo impactada.</p>
+          <a class="read-more" href="#featured-update">Ver resumen completo →</a>
+        </article>
+
+        <article class="update-card" data-category="finance reference">
+          <div class="update-card-top">
+            <div>
+              <div class="meta-row" style="margin-bottom: 9px;"><span class="meta-chip gold">SAP / Finanzas</span><span class="meta-chip">Proceso mensual</span></div>
+              <h3>Material Ledger · Procedimiento México</h3>
+            </div>
+            <span class="status-pill status-reference">⌘ Referencia</span>
+          </div>
+          <p class="muted">SOP para revalorizar el costo estándar de materiales consumidos y obtener el costo real mediante transacciones del módulo de costos de SAP.</p>
+          <div class="doc-list">
+            <!-- REPLACE THE # WITH THE FINAL SHAREPOINT URL -->
+            <a class="doc-link" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Abrir SOP Material Ledger <span>↗</span></a>
+          </div>
+        </article>
+
+        <article class="update-card" data-category="finance reference">
+          <div class="update-card-top">
+            <div>
+              <div class="meta-row" style="margin-bottom: 9px;"><span class="meta-chip gold">SAP / Finanzas</span><span class="meta-chip">Cierre mensual</span></div>
+              <h3>Material Ledger Closing</h3>
+            </div>
+            <span class="status-pill status-reference">⌘ Referencia</span>
+          </div>
+          <p class="muted">Guía de cierre y costeo real de Material Ledger, incluyendo ejecución, validaciones y comunicación de finalización de actividad.</p>
+          <div class="doc-list">
+            <!-- REPLACE THE # WITH THE FINAL SHAREPOINT URL -->
+            <a class="doc-link" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Abrir guía de cierre <span>↗</span></a>
+          </div>
+        </article>
+
+        <article class="update-card" data-category="finance reference">
+          <div class="update-card-top">
+            <div>
+              <div class="meta-row" style="margin-bottom: 9px;"><span class="meta-chip gold">SAP / Finanzas</span><span class="meta-chip">Reconciliación</span></div>
+              <h3>Material Ledger Reconciliation</h3>
+            </div>
+            <span class="status-pill status-reference">⌘ Referencia</span>
+          </div>
+          <p class="muted">Documento de apoyo para reconciliar información de Material Ledger, identificar variaciones y validar diferencias entre SAP y los archivos de control.</p>
+          <div class="doc-list">
+            <!-- REPLACE THE # WITH THE FINAL SHAREPOINT URL -->
+            <a class="doc-link" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Abrir guía de reconciliación <span>↗</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-card" id="reference-library">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">Reference library</div>
+          <h2 class="section-title">Material Ledger · Paquete de consulta</h2>
+          <p class="section-subtitle">Tres documentos complementarios para entender el proceso, ejecutar el cierre y respaldar actividades de reconciliación.</p>
+        </div>
+        <div class="pill pill-gold">● Internal reference</div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="stack">
+          <div class="info-card">
+            <h4>Procedimiento México</h4>
+            <p class="muted">Cubre el objetivo del Material Ledger, su alcance, responsabilidades y transacciones SAP de referencia, incluyendo CKMLCP y CKMVFM.</p>
+          </div>
+          <div class="info-card">
+            <h4>Material Ledger Closing</h4>
+            <p class="muted">Explica el cierre a costo real, con requisitos, ejecución de corridas de costeo y actividades de seguimiento al cierre.</p>
+          </div>
+          <div class="info-card">
+            <h4>Material Ledger Reconciliation</h4>
+            <p class="muted">Detalla las actividades de conciliación, preparación de archivos, comparación con SAP y análisis de diferencias por material, planta o valor.</p>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="publisher-note">
+            <strong>Links pendientes de publicación</strong>
+            <p>Los documentos se presentan como referencia interna. Sustituye los enlaces <code>href="#"</code> de las cards superiores con los links de SharePoint cuando estén listos.</p>
+          </div>
+          <div class="mini-card">
+            <h4>Recomendación de hosting</h4>
+            <p class="muted">Mantén los PDFs en SharePoint por permisos y control documental. Conserva esta página y el comunicado visual en GitHub Pages para una navegación rápida y consistente.</p>
+          </div>
+          <div class="mini-card">
+            <h4>Formato sugerido para próximos updates</h4>
+            <p class="muted">Título · fecha · owner · audiencia · impacto · acción requerida · fecha de vigencia · enlaces de soporte.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card" aria-label="Historial de publicación">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">Publishing log</div>
+          <h2 class="section-title">Historial del hub</h2>
+          <p class="section-subtitle">Registro simple para dar trazabilidad a los comunicados y referencias que se agregan a esta página.</p>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-row">
+          <div class="timeline-date">Por confirmar</div>
+          <div class="timeline-dot"></div>
+          <div><h4>Nueva Matriz de Prioridad de Incidentes</h4><p>Comunicado visual y resumen operativo incorporados al hub de Updates.</p></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-date">Por confirmar</div>
+          <div class="timeline-dot"></div>
+          <div><h4>Biblioteca de Material Ledger</h4><p>Se agregaron referencias de procedimiento, cierre y reconciliación para consulta interna.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">IT Operations · Digital &amp; Technology · Comunicación operativa y referencias internas.</p>
+  </main>
+
+  <script>
+    const filterButtons = document.querySelectorAll('.filter-chip');
+    const updateCards = document.querySelectorAll('.update-card');
+    const updateCount = document.getElementById('updateCount');
+
+    function applyFilter(filter) {
+      let visible = 0;
+      updateCards.forEach((card) => {
+        const categories = card.dataset.category.split(' ');
+        const show = filter === 'all' || categories.includes(filter);
+        card.classList.toggle('hidden', !show);
+        if (show) visible += 1;
+      });
+      updateCount.textContent = `${visible} ${visible === 1 ? 'elemento visible' : 'elementos visibles'}`;
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        filterButtons.forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        applyFilter(button.dataset.filter);
+      });
+    });
+
+    document.querySelectorAll('.doc-link[aria-disabled="true"]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        if (link.getAttribute('href') === '#') {
+          event.preventDefault();
+          alert('Pendiente: reemplaza este enlace con la URL final de SharePoint.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
