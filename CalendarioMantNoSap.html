@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario de Mantenimientos SAP No Productivos | Q2 2026</title>
+  <style>
+    :root{
+      --heineken:#00a82d;
+      --heineken-dark:#006b1f;
+      --green-soft:#e9f8ee;
+      --ink:#121212;
+      --muted:#5c6670;
+      --line:#d9e2dc;
+      --bg:#f6f8f7;
+      --card:#ffffff;
+      --dev:#2f80ed;
+      --qa:#f2a900;
+      --acc:#8e44ad;
+      --danger:#c0392b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:var(--ink)}
+    .hero{background:linear-gradient(135deg,var(--heineken-dark),var(--heineken));color:#fff;padding:28px 34px 24px;border-bottom:5px solid #0b7d2a}
+    .brand{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;max-width:1180px;margin:auto}
+    .logo{font-weight:800;letter-spacing:.4px;font-size:13px;text-transform:uppercase;line-height:1.05;display:flex;gap:10px;align-items:center}
+    .dot{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff 0 10%,transparent 11%),rgba(255,255,255,.2);border:2px dotted #fff}
+    h1{font-size:32px;margin:20px 0 8px;line-height:1.1}.subtitle{font-size:17px;opacity:.95;margin:0;max-width:850px}.tag{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);border-radius:999px;padding:8px 14px;font-weight:700;white-space:nowrap}
+    main{max-width:1180px;margin:24px auto;padding:0 18px 34px}.notice{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.06);padding:18px}.card h2{margin:0 0 10px;font-size:20px}.card p{margin:8px 0;color:#30363b;line-height:1.45}.warning{border-left:6px solid var(--heineken);background:#fff}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{background:var(--green-soft);border:1px solid #cbeed5;border-radius:14px;padding:13px;text-align:center}.metric b{display:block;font-size:24px;color:var(--heineken-dark)}.metric span{font-size:12px;color:var(--muted);text-transform:uppercase;font-weight:700}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0}.controls button,.controls select,.controls input{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-size:14px}.controls button{cursor:pointer;font-weight:700}.controls button.active{background:var(--heineken);color:#fff;border-color:var(--heineken)}.controls input{flex:1;min-width:240px}
+    .calendar{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.06)}.cal-head{display:grid;grid-template-columns:repeat(7,1fr);background:#0f2b18;color:#fff}.cal-head div{padding:12px;text-align:center;font-weight:700;font-size:13px}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}.day{min-height:145px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px;background:#fff}.day:nth-child(7n){border-right:0}.day.muted{background:#fafafa;color:#aaa}.day-number{font-weight:800;margin-bottom:8px}.event{border-radius:12px;padding:8px;margin:7px 0;color:#fff;cursor:pointer;font-size:12px;line-height:1.25;box-shadow:0 3px 8px rgba(0,0,0,.14)}.event.dev{background:var(--dev)}.event.qa{background:var(--qa);color:#1f1f1f}.event.acc{background:var(--acc)}.event b{display:block;font-size:13px}.event small{display:block;opacity:.92;margin-top:2px}.list{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.06)}table{width:100%;border-collapse:collapse}th{background:var(--heineken);color:#fff;text-align:left;padding:11px;font-size:13px}td{padding:10px 11px;border-bottom:1px solid var(--line);font-size:13px}tr:hover{background:#f4fbf6}.pill{border-radius:999px;padding:4px 9px;font-weight:800;font-size:12px;display:inline-block}.pill.DEV{background:#e8f2ff;color:#1765b8}.pill.QA{background:#fff3ce;color:#7b5700}.pill.ACC{background:#f2e8f8;color:#6b2c82}.hidden{display:none!important}
+    .signature{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:18px}.sig-name{font-size:26px;font-weight:800;margin:0}.sig-role{font-size:18px;margin:4px 0 12px}.sig-mail{font-style:italic;color:#333}.mascot{font-size:68px;line-height:1}.modal{position:fixed;inset:0;background:rgba(0,0,0,.46);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.open{display:flex}.modal-card{background:#fff;border-radius:20px;max-width:520px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.28)}.modal-card h3{margin:0 0 8px;font-size:22px}.modal-row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:9px 0;gap:14px}.modal-row span:first-child{font-weight:800;color:#4b5560}.close{float:right;border:0;background:#eee;border-radius:10px;padding:8px 11px;cursor:pointer;font-weight:800}
+    @media(max-width:780px){.notice{grid-template-columns:1fr}.brand{display:block}.tag{display:inline-block;margin-top:14px}.cal-head,.cal-grid{grid-template-columns:1fr}.cal-head{display:none}.day{min-height:auto}.day.muted{display:none}.signature{align-items:flex-start}.mascot{display:none}.metrics{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="brand">
+      <div>
+        <div class="logo"><span class="dot"></span><span>Heineken<br>Digital & Technology</span></div>
+        <h1>Calendario de Mantenimientos SAP No Productivos</h1>
+        <p class="subtitle">Q2 2026 | Ventanas programadas para ambientes DEV, QA y ACC.</p>
+      </div>
+      <div class="tag">Duración por ventana: 10 horas</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="notice">
+      <div class="card warning">
+        <h2>Recomendación de Melvin</h2>
+        <p>Les comparto el calendario de los mantenimientos correspondientes al Q2 - 2026 para los sistemas SAP No Productivos.</p>
+        <p><strong>Los sistemas estarán fuera de servicio durante los mantenimientos programados.</strong> La duración de cada ventana será de <strong>10 horas</strong>. Tomen las precauciones necesarias.</p>
+        <p>Por favor, reenvíen este mensaje a quien consideren necesario para evitar impactos en actividades de desarrollo, pruebas, validación o soporte.</p>
+      </div>
+      <div class="card">
+        <h2>Resumen ejecutivo</h2>
+        <div class="metrics">
+          <div class="metric"><b>22</b><span>Sistemas</span></div>
+          <div class="metric"><b>3</b><span>Ambientes</span></div>
+          <div class="metric"><b>10h</b><span>Por ventana</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <button class="active" data-filter="ALL">Todos</button>
+      <button data-filter="DEV">DEV</button>
+      <button data-filter="QA">QA</button>
+      <button data-filter="ACC">ACC</button>
+      <select id="systemFilter"><option value="ALL">Todos los sistemas</option></select>
+      <input id="searchBox" placeholder="Buscar por SID, sistema o ambiente..." />
+    </section>
+
+    <section class="calendar" aria-label="Vista de calendario interactiva">
+      <div class="cal-head"><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div></div>
+      <div class="cal-grid" id="calendarGrid"></div>
+    </section>
+
+    <section class="list">
+      <table>
+        <thead><tr><th>Fecha</th><th>Ambiente</th><th>SID</th><th>System</th><th>Ventana</th></tr></thead>
+        <tbody id="eventTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card signature">
+      <div>
+        <p style="margin:0;color:var(--muted);font-size:13px">Saludos/Regards</p>
+        <p class="sig-name">Melvin Rodríguez Martínez</p>
+        <p class="sig-role">SAP Technology Architect</p>
+        <p class="sig-mail">melvin.rodriguezmartinez@heineken.com</p>
+      </div>
+      <div class="mascot" title="Heineken D&T">🍻</div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal"><div class="modal-card"><button class="close" onclick="closeModal()">Cerrar</button><h3 id="modalTitle"></h3><div id="modalBody"></div></div></div>
+
+<script>
+const events = [
+{sid:'DMX', sid2:'xMX', system:'PI', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'DMR', sid2:'xMR', system:'Java ECC', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'DRM', sid2:'xRM', system:'ECC', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'DTM, DTO', sid2:'xTM', system:'TM', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'DCM', sid2:'xCM', system:'CRM', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'DMP', sid2:'xMP', system:'Portal Netweaver Registro de La Producción', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'DPM', sid2:'xPM', system:'HCM', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'DGM DWM', sid2:'xGM', system:'Portal T1 Transportistas', env:'DEV', date:'2026-04-27T07:00:00'},
+{sid:'QMR, WRQ', sid2:'xMR', system:'Java ECC', env:'QA', date:'2026-04-29T07:00:00'},
+{sid:'QTM QTO', sid2:'xTM', system:'TM', env:'QA', date:'2026-04-29T07:00:00'},
+{sid:'QMP WMQ', sid2:'xMP', system:'Portal Netweaver Registro de La Producción', env:'QA', date:'2026-04-29T07:00:00'},
+{sid:'QMX WXQ', sid2:'xMX', system:'PI', env:'QA', date:'2026-04-29T07:00:00'},
+{sid:'QRM', sid2:'xRM', system:'ECC', env:'QA', date:'2026-04-29T07:00:00'},
+{sid:'QCM', sid2:'xCM', system:'CRM', env:'QA', date:'2026-04-29T07:00:00'},
+{sid:'QPM', sid2:'xPM', system:'HCM', env:'QA', date:'2026-04-29T07:00:00'},
+{sid:'ACM', sid2:'xCM', system:'CRM', env:'ACC', date:'2026-05-04T07:00:00'},
+{sid:'AMR, WRA', sid2:'xMR', system:'Java ECC', env:'ACC', date:'2026-05-04T07:00:00'},
+{sid:'ARM', sid2:'xRM', system:'ECC', env:'ACC', date:'2026-05-04T07:00:00'},
+{sid:'AMX WXA', sid2:'xMX', system:'PI', env:'ACC', date:'2026-05-04T07:00:00'},
+{sid:'AMP WMA', sid2:'xMP', system:'Portal Netweaver Registro de La Producción', env:'ACC', date:'2026-05-04T07:00:00'},
+{sid:'ATM ATO', sid2:'xTM', system:'TM', env:'ACC', date:'2026-05-04T07:00:00'},
+{sid:'APM', sid2:'xPM', system:'HCM', env:'ACC', date:'2026-05-04T07:00:00'}
+];
+let activeEnv='ALL';
+const monthNames=['enero','febrero','marzo','abril','mayo','junio','julio'];
+function fmt(d){return d.toLocaleDateString('es-MX',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',hour12:false});}
+function endFmt(d){const e=new Date(d); e.setHours(e.getHours()+10); return e.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',hour12:false});}
+function filtered(){const q=document.getElementById('searchBox').value.toLowerCase();const sys=document.getElementById('systemFilter').value;return events.filter(e=>(activeEnv==='ALL'||e.env===activeEnv)&&(sys==='ALL'||e.system===sys)&&(`${e.sid} ${e.sid2} ${e.system} ${e.env}`.toLowerCase().includes(q)));}
+function renderCalendar(){const grid=document.getElementById('calendarGrid');grid.innerHTML='';const start=new Date(2026,3,27);const days=14;const evs=filtered();for(let i=0;i<days;i++){const d=new Date(start);d.setDate(start.getDate()+i);const cell=document.createElement('div');cell.className='day';cell.innerHTML=`<div class="day-number">${d.getDate()} ${monthNames[d.getMonth()]}</div>`;evs.filter(e=>new Date(e.date).toDateString()===d.toDateString()).forEach(e=>{const item=document.createElement('div');item.className='event '+e.env.toLowerCase();item.innerHTML=`<b>${e.env} | ${e.system}</b><small>${e.sid} · 07:00-${endFmt(new Date(e.date))}</small>`;item.onclick=()=>openModal(e);cell.appendChild(item)});grid.appendChild(cell)}}
+function renderTable(){const tbody=document.getElementById('eventTable');tbody.innerHTML='';filtered().forEach(e=>{const d=new Date(e.date);tbody.insertAdjacentHTML('beforeend',`<tr onclick='openModal(${JSON.stringify(e)})'><td>${fmt(d)}</td><td><span class="pill ${e.env}">${e.env}</span></td><td>${e.sid} / ${e.sid2}</td><td>${e.system}</td><td>07:00 - ${endFmt(d)} MX</td></tr>`)})}
+function openModal(e){const d=new Date(e.date);document.getElementById('modalTitle').textContent=`${e.system} | ${e.env}`;document.getElementById('modalBody').innerHTML=`<div class="modal-row"><span>SID</span><span>${e.sid}</span></div><div class="modal-row"><span>SID técnico</span><span>${e.sid2}</span></div><div class="modal-row"><span>Inicio</span><span>${fmt(d)} MX</span></div><div class="modal-row"><span>Fin estimado</span><span>${endFmt(d)} MX</span></div><div class="modal-row"><span>Duración</span><span>10 horas</span></div><p style="margin-top:14px;color:#30363b"><strong>Recomendación:</strong> tomar precauciones y comunicar a usuarios clave. El sistema estará fuera de servicio durante la ventana programada.</p>`;document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function init(){const systems=[...new Set(events.map(e=>e.system))].sort();const select=document.getElementById('systemFilter');systems.forEach(s=>select.insertAdjacentHTML('beforeend',`<option value="${s}">${s}</option>`));document.querySelectorAll('.controls button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.controls button').forEach(x=>x.classList.remove('active'));b.classList.add('active');activeEnv=b.dataset.filter;renderCalendar();renderTable();});select.onchange=()=>{renderCalendar();renderTable()};document.getElementById('searchBox').oninput=()=>{renderCalendar();renderTable()};renderCalendar();renderTable();}
+init();
+</script>
+</body>
+</html>
