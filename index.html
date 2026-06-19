@@ -1,1328 +1,560 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project IO | Home</title>
-
-<style>
-  :root{
-    --text:#111;
-    --muted:rgba(0,0,0,.62);
-    --line:rgba(0,0,0,.10);
-
-    --card:#ffffff;
-    --btn:#111827;
-    --btnText:#ffffff;
-    --btnHover:#0b1224;
-
-    --shadow:0 18px 50px rgba(0,0,0,.18);
-    --radius:18px;
-
-    /* Calendar-specific */
-    --paper:rgba(255,255,255,.96);
-    --calBorder:#d7dbe3;
-    --calHeader:#f3f5f8;
-  }
-
-  *{ box-sizing:border-box; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
-  html, body{ height:100%; }
-
-  body{
-    margin:0;
-    color:var(--text);
-    background:#ffffff;
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-
-  /* ✅ Persistent background */
-  .bg{
-    position:fixed;
-    inset:0;
-    background:url("assets/img/fondo0.png") no-repeat center center fixed;
-    background-size:cover;
-    z-index:-3;
-    opacity:1;
-    transform:scale(1.02);
-  }
-  .bgVeil{
-    position:fixed;
-    inset:0;
-    background:rgba(255,255,255,.72);
-    z-index:-2;
-    opacity:1;
-  }
-
-  /* ✅ Splash overlay (fades out) */
-  .splash{
-    position:fixed;
-    inset:0;
-    background:url("assets/img/fondo0.png") no-repeat center center;
-    background-size:cover;
-    z-index:9999;
-    opacity:1;
-    transition:opacity 900ms ease;
-    pointer-events:none;
-  }
-  .splash::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.10));
-  }
-  body.reveal .splash{ opacity:0; }
-
-  .wrap{
-    max-width:1200px;
-    margin:0 auto;
-    padding:28px 22px 34px;
-  }
-
-  /* Page reveal */
-  .page{
-    opacity:0;
-    transform:translateY(8px);
-    transition:opacity 700ms ease, transform 900ms ease;
-  }
-  body.reveal .page{
-    opacity:1;
-    transform:translateY(0);
-  }
-
-  /* Header */
-  .top{
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap:16px;
-    margin-bottom:14px;
-  }
-  .brand{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:16px 16px;
-    width:100%;
-  }
-  .title{ font-size:18px; font-weight:900; letter-spacing:.2px; }
-  .subtitle{ margin-top:6px; font-size:13px; color:var(--muted); line-height:1.4; }
-
-  /* Layout */
-  .grid{
-    display:grid;
-    grid-template-columns: 1.2fr .8fr;
-    gap:14px;
-    align-items:stretch;
-  }
-
-  .card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    overflow:hidden;
-    position:relative;
-  }
-
-  .cardHeader{
-    padding:16px 16px 12px;
-    border-bottom:1px solid rgba(0,0,0,.08);
-    background:rgba(0,0,0,.02);
-  }
-  .cardHeader h2{ margin:0; font-size:16px; font-weight:900; letter-spacing:.2px; }
-  .cardHeader p{ margin:6px 0 0; font-size:12.5px; color:var(--muted); line-height:1.35; }
-  .cardBody{ padding:16px; }
-
-  /* Buttons / cards */
-  .btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:10px 12px;
-    border-radius:12px;
-    border:1px solid rgba(0,0,0,.10);
-    background:var(--btn);
-    color:var(--btnText);
-    text-decoration:none;
-    font-size:13px;
-    transition:background .12s ease, transform .08s ease;
-    user-select:none;
-    white-space:nowrap;
-  }
-  .btn:hover{ background:var(--btnHover); }
-  .btn:active{ transform:translateY(1px); }
-
-  /* ===== Top embedded calendars (FIRST THING on landing) ===== */
-  .calLanding{ margin-bottom:14px; }
-
-  .calShell{
-    border:1px solid rgba(0,0,0,.10);
-    border-radius:18px;
-    overflow:hidden;
-    background:#fff;
-    box-shadow:0 14px 30px rgba(0,0,0,.12);
-  }
-  .calTopbar{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 14px;
-    border-bottom:1px solid rgba(0,0,0,.08);
-    background:rgba(0,0,0,.02);
-    flex-wrap:wrap;
-  }
-  .calTopbar .left{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-    min-width:220px;
-  }
-  .calTopbar .left b{ font-size:14px; letter-spacing:.2px; }
-  .calTopbar .left span{ font-size:12.5px; color:var(--muted); line-height:1.25; }
-  .calTopbar .right{
-    display:flex;
-    gap:8px;
-    align-items:center;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-
-  .segmented{ display:flex; gap:6px; flex-wrap:wrap; }
-  .segBtn{
-    appearance:none;
-    border:1px solid rgba(0,0,0,.10);
-    background:#fff;
-    border-radius:999px;
-    padding:8px 10px;
-    font-size:12.5px;
-    font-weight:800;
-    cursor:pointer;
-    transition:transform .08s ease, background .12s ease;
-  }
-  .segBtn:hover{ background:rgba(0,0,0,.03); }
-  .segBtn:active{ transform:translateY(1px); }
-  .segBtn.active{
-    background:#111827;
-    color:#fff;
-    border-color:#111827;
-  }
-
-  .toggleLite{
-    display:inline-flex;
-    gap:8px;
-    align-items:center;
-    padding:8px 10px;
-    border-radius:999px;
-    border:1px solid rgba(0,0,0,.10);
-    background:#fff;
-    font-size:12.5px;
-    cursor:pointer;
-    user-select:none;
-    white-space:nowrap;
-  }
-  .toggleLite input{ transform:scale(1.05); }
-
-  .calBody{
-    background:rgba(255,255,255,.70);
-    padding:14px;
-  }
-
-  /* SharePoint iframe area */
-  .iframeWrap{
-    background:#fff;
-    border:1px solid var(--calBorder);
-    border-radius:14px;
-    overflow:hidden;
-    height:520px;
-    min-height:420px;
-  }
-  .iframeWrap iframe{ width:100%; height:100%; border:0; }
-
-  /* Month picker + mock calendar */
-  .monthRow{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-    margin-bottom:10px;
-  }
-  .monthRow .label{
-    font-size:12.5px;
-    color:var(--muted);
-    font-weight:700;
-  }
-  .monthRow input[type="month"]{
-    border:1px solid rgba(0,0,0,.10);
-    border-radius:12px;
-    padding:9px 10px;
-    font-size:13px;
-    background:#fff;
-  }
-
-  table.calendar{
-    width:100%;
-    border-collapse:collapse;
-    font-size:12px;
-    background:#fff;
-    border:1px solid var(--calBorder);
-    border-radius:14px;
-    overflow:hidden;
-  }
-  table.calendar td, table.calendar th{
-    border:1px solid var(--calBorder);
-    padding:8px 8px;
-    vertical-align:top;
-    min-width:34px;
-    height:48px;
-    background:#fff;
-  }
-  table.calendar th{
-    position:sticky;
-    top:0;
-    background:var(--calHeader);
-    z-index:2;
-    text-align:left;
-    font-weight:900;
-  }
-  .calDayNum{
-    font-weight:900;
-    font-size:12px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-  }
-  .mutedCell{ color:#7a7f88; }
-  .empty{ background:#fff; border-color:#f0f2f6; color:transparent; }
-  .hideEmpty td.empty{ background:#fff; border-color:#f0f2f6; color:transparent; }
-
-  .chip{
-    display:inline-flex;
-    align-items:center;
-    padding:4px 8px;
-    border-radius:999px;
-    border:1px solid rgba(0,0,0,.12);
-    font-size:11px;
-    font-weight:800;
-    margin-top:6px;
-    background:rgba(0,0,0,.03);
-    color:#111;
-    line-height:1;
-    user-select:none;
-  }
-  .chip.r{ background:rgba(138,164,255,.25); border-color:rgba(138,164,255,.55); }
-  .chip.t{ background:rgba(107,229,177,.22); border-color:rgba(107,229,177,.55); }
-  .chip.f{ background:rgba(255,184,107,.25); border-color:rgba(255,184,107,.55); }
-
-  .legend{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:10px;
-    font-size:12px;
-    color:var(--muted);
-  }
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:8px 10px;
-    border-radius:999px;
-    background:rgba(0,0,0,.03);
-    border:1px solid rgba(0,0,0,.08);
-  }
-  .dot{ width:10px;height:10px;border-radius:999px;background:#8aa4ff; }
-  .dot2{ background:#6be5b1; }
-  .dot3{ background:#ffb86b; }
-
-  .note{
-    font-size:12.5px;
-    color:var(--muted);
-    margin:10px 2px 0;
-    line-height:1.35;
-  }
-
-  /* ===== Avisos visual cards ===== */
-  .avisoGrid{
-    display:grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap:16px;
-    margin-top:16px;
-  }
-
-  .avisoCard{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:16px;
-    border-radius:18px;
-    background:#ffffff;
-    border:1px solid rgba(0,0,0,.10);
-    box-shadow:0 14px 30px rgba(0,0,0,.12);
-    text-decoration:none;
-    color:inherit;
-    transition:transform .12s ease, box-shadow .15s ease;
-    min-width:0; /* IMPORTANT: allow flex children to shrink properly */
-  }
-  .avisoCard:hover{
-    transform:translateY(-2px);
-    box-shadow:0 20px 42px rgba(0,0,0,.16);
-  }
-
-  .avisoIcon{ width:56px; height:56px; flex-shrink:0; }
-  .avisoIcon img{ width:100%; height:100%; object-fit:contain; display:block; }
-
-  .avisoText{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-    min-width:0;
-    flex: 1; /* IMPORTANT: give text area real space */
-  }
-  .avisoTitle{
-    font-size:15px;
-    font-weight:900;
-    margin:0;
-    line-height:1.15;
-    white-space:normal; /* allow wrap instead of crunching */
-  }
-  .avisoSub{
-    font-size:12.5px;
-    color:var(--muted);
-    margin-top:2px;
-    line-height:1.25;
-  }
-
-  .avisoStat{
-    margin-left:auto;
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    gap:4px;
-    flex-shrink:0;       /* keep numbers from squishing */
-    min-width: 72px;     /* keep a stable stat column */
-  }
-  .bigNum{
-    font-size:28px;
-    font-weight:1000;
-    letter-spacing:.3px;
-    line-height:1;
-    color:#111827;
-  }
-  .miniHint{
-    font-size:11.5px;
-    color:var(--muted);
-    white-space:nowrap;
-    line-height:1.1;
-  }
-
-  /* ===== IT Ops Control Panel Sections ===== */
-  .panelBanner{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:12px 14px;
-    border:1px solid rgba(0,0,0,.10);
-    border-radius:16px;
-    background: rgba(0,0,0,.02);
-    margin-top: 6px;
-  }
-  .panelBanner b{
-    font-size: 13.5px;
-    letter-spacing:.2px;
-  }
-  .panelBanner .hint{
-    font-size:12px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  /* ✅ FIX: do NOT force 3/4 columns (this caused the “aplasta”)
-     Use auto-fit with a sensible min width so cards wrap gracefully. */
-  .avisoGrid3,
-  .avisoGrid4{
-    display:grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap:16px;
-    margin-top: 12px;
-  }
-
-  /* ✅ Sleeker in IT Ops Main: remove subtext ONLY inside those grids */
-  .avisoGrid3 .avisoSub,
-  .avisoGrid4 .avisoSub{
-    display:none;
-  }
-
-  /* ✅ Give KPI tiles a tiny bit more breathing room in those grids */
-  .avisoGrid3 .avisoCard,
-  .avisoGrid4 .avisoCard{
-    padding: 16px 16px;
-    min-height: 86px;
-  }
-  .avisoGrid3 .bigNum,
-  .avisoGrid4 .bigNum{
-    font-size: 30px; /* slightly larger so it reads well */
-  }
-
-  @media (max-width: 980px){
-    .grid{ grid-template-columns: 1fr; }
-    .avisoGrid{ grid-template-columns:1fr; }
-    .iframeWrap{ height:460px; }
-    .top{ flex-direction:column; align-items:stretch; }
-  }
-
-  /* Right rail */
-  .rightGrid{ display:grid; grid-template-columns:1fr; gap:14px; }
-  .smallCard .cardBody{
-    padding:14px 16px 16px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .tag{
-    font-size:12px;
-    color:var(--muted);
-    border:1px solid rgba(0,0,0,.08);
-    background:rgba(0,0,0,.02);
-    padding:6px 10px;
-    border-radius:999px;
-    white-space:nowrap;
-  }
-
-  /* ===== Right rail sleek rows ===== */
-  .sleekList{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    padding: 14px 16px 16px;
-  }
-  .sleekRow{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding: 12px 12px;
-    border-radius: 14px;
-    border:1px solid rgba(0,0,0,.10);
-    background: rgba(255,255,255,.92);
-    box-shadow: 0 10px 22px rgba(0,0,0,.08);
-  }
-  .sleekRow .t{
-    font-weight: 900;
-    letter-spacing:.2px;
-  }
-  .sleekRow .btn{
-    padding: 9px 12px;
-    border-radius: 12px;
-  }
-
-  /* ===== Help / Chatbot mock ===== */
-  .helpFab{
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    width: 54px;
-    height: 54px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,.12);
-    background: #111827;
-    color: #fff;
-    box-shadow: 0 18px 50px rgba(0,0,0,.22);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    z-index: 9999;
-    user-select:none;
-  }
-  .helpFab:hover{ background:#0b1224; }
-
-  .helpPanel{
-    position: fixed;
-    right: 18px;
-    bottom: 82px;
-    width: min(360px, calc(100vw - 36px));
-    border-radius: 18px;
-    border: 1px solid rgba(0,0,0,.12);
-    background: rgba(255,255,255,.96);
-    box-shadow: 0 22px 60px rgba(0,0,0,.22);
-    overflow:hidden;
-    z-index: 9999;
-    display:none;
-  }
-  .helpHeader{
-    padding: 12px 12px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    background: rgba(0,0,0,.02);
-    border-bottom: 1px solid rgba(0,0,0,.08);
-  }
-  .helpHeader b{ font-size: 13.5px; letter-spacing:.2px; }
-  .helpClose{
-    appearance:none;
-    border:1px solid rgba(0,0,0,.12);
-    background:#fff;
-    border-radius: 12px;
-    padding: 8px 10px;
-    cursor:pointer;
-    font-weight:900;
-  }
-  .helpBody{ padding: 12px; }
-  .helpBubble{
-    border:1px solid rgba(0,0,0,.10);
-    background: rgba(0,0,0,.02);
-    border-radius: 14px;
-    padding: 10px 10px;
-    font-size: 12.5px;
-    color: rgba(0,0,0,.70);
-    line-height:1.35;
-  }
-  .helpActions{
-    margin-top: 10px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-  .helpQ{
-    width:100%;
-    text-align:left;
-    border:1px solid rgba(0,0,0,.12);
-    background:#fff;
-    border-radius: 14px;
-    padding: 10px 10px;
-    cursor:pointer;
-    font-weight:900;
-    font-size: 12.5px;
-  }
-  .helpQ:hover{ background: rgba(0,0,0,.03); }
-
-  .helpAnswer{
-    margin-top: 10px;
-    border:1px solid rgba(0,0,0,.10);
-    background: rgba(17,24,39,.06);
-    border-radius: 14px;
-    padding: 10px 10px;
-    font-size: 12.5px;
-    color: rgba(0,0,0,.72);
-    line-height:1.35;
-    display:none;
-  }
-  .helpAnswer a{
-    display:inline-flex;
-    margin-top: 8px;
-    text-decoration:none;
-  }
-
-  .attnRow{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap:16px;
-  margin-top:12px;
-}
-
-/* en pantallas pequeñas baja a 1 columna */
-@media (max-width: 980px){
-  .attnRow{ grid-template-columns: 1fr; }
-}
-
-/* tile compacto, limpio */
-.attnRow .avisoCard{
-  padding:16px 18px;
-  min-height:86px;
-  align-items:center;
-  min-width:0;
-}
-
-/* no queremos subtexto aquí */
-.attnRow .avisoSub{ display:none !important; }
-
-/* estructura interna para que nunca se aplaste */
-.attnRow .avisoText{
-  flex:1;
-  min-width:0;
-  gap:0;
-}
-
-/* title más sólido */
-.attnRow .avisoTitle{
-  font-size:15px;
-  font-weight:950;
-  line-height:1.15;
-  margin:0;
-}
-
-/* stat siempre visible, alineado */
-.attnRow .avisoStat{
-  min-width:78px;
-  flex-shrink:0;
-  align-items:flex-end;
-  justify-content:center;
-  gap:6px;
-}
-
-/* número siempre grande */
-.attnRow .bigNum{
-  font-size:30px;
-  font-weight:1000;
-  line-height:1;
-}
-
-/* hint opcional: más discreto */
-.attnRow .miniHint{
-  font-size:11.5px;
-  line-height:1.1;
-}
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modelo de Comunicación IT Operations</title>
+  <link rel="stylesheet" href="https://heiway.sharepoint.com/:u:/r/sites/AMS-Commerce/Shared%20Documents/ComsModel/coms.css?csf=1&web=1&e=sd70ib" />
 </head>
-
 <body>
-  <!-- ✅ persistent background -->
-  <div class="bg" aria-hidden="true"></div>
-  <div class="bgVeil" aria-hidden="true"></div>
-
-  <!-- ✅ splash that fades out -->
-  <div class="splash" aria-hidden="true"></div>
-
-  <div class="wrap page">
-    <div class="top">
-      <div class="brand">
-        <div class="title">Project IO</div>
-        <div class="subtitle">Hub interno para IT Operations: calendarios, torres, documentación y herramientas.</div>
-      </div>
-    </div>
-
-    <!-- ✅ Calendars FIRST on landing page -->
-    <section class="calLanding">
-      <div class="calShell">
-        <div class="calTopbar">
-          <div class="left">
-            <b>Calendarios operativos</b>
-            <span>Release calendar (SharePoint) y vistas mock (releases y patches) con selector de mes.</span>
-          </div>
-
-          <div class="right">
-            <div class="segmented" aria-label="Seleccionar calendario">
-              <button class="segBtn active" data-tab="sp">Release (SP)</button>
-              <button class="segBtn" data-tab="release">Monthly Release (Mock)</button>
-              <button class="segBtn" data-tab="win">Windows Patches (Mock)</button>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-gridlines"></div>
+      <div class="hero-grid">
+        <div>
+          <div class="brand-pill"><span class="star">★</span> HEINEKEN México · Digital &amp; Technology · D&amp;T Communication Hub</div>
+          <h1>Modelo de Comunicación IT Operations</h1>
+          <p class="hero-copy">
+            Un hub de comunicación dentro de <strong>Digital &amp; Technology</strong> para conectar a IT Operations con IT Office, Analytics, Digital Backbone, Commerce, Supply Chain y Back Office.
+            El objetivo es dar visibilidad clara a releases, actualizaciones, alertas, responsables y formas de colaboración, con IT Operations como habilitador operativo dentro del ecosistema D&amp;T.
+          </p>
+          <div class="hero-ribbon">● Releases · Alertas críticas · Directorio · Páginas por frente</div>
+          <div class="hero-highlight-row">
+            <div class="hero-chip">
+              <strong>Releases</strong>
+              <span>Calendario visible para D&amp;T</span>
             </div>
-
-            <label class="toggleLite" title="Atenúa/oculta celdas vacías para hacerlo más legible">
-              <input id="toggleEmpty" type="checkbox" checked />
-              Ocultar vacíos
-            </label>
-
-            <a class="btn" id="openSpLink" href="#" target="_blank" rel="noopener noreferrer">Abrir SP</a>
-            <a class="btn" id="reloadFrame" href="#">Recargar</a>
+            <div class="hero-chip">
+              <strong>Incidentes</strong>
+              <span>Fuente clara de P1 y estatus</span>
+            </div>
+            <div class="hero-chip">
+              <strong>Owners</strong>
+              <span>Directorio y páginas por frente</span>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a href="#release-calendar" class="btn btn-primary">Calendario de Release</a>
+            <a href="https://heiway.sharepoint.com/:u:/s/AMS-Commerce/IQBy1qxLLwvoR5AyQDFQRbQZAfe6TeOluXTyFCKNjZNtWGw?e=ih2t9w" class="btn btn-primary">Calendario Mantenimientos SAP No Productivos</a>
+            <a href="#quick-access" class="btn btn-secondary">Explorar secciones</a>
           </div>
         </div>
 
-        <div class="calBody">
-          <!-- TAB: SharePoint -->
-          <div class="calPanel" id="cal-sp">
-            <div class="iframeWrap">
-              <iframe
-                id="spFrame"
-                title="HMEX DT Release Calendar 2026"
-                referrerpolicy="no-referrer"
-                loading="lazy"
-                allow="clipboard-read; clipboard-write"
-              ></iframe>
-            </div>
-
-            <div class="note">
-              Si el iframe aparece en blanco o con “refused to connect”, normalmente es porque SharePoint/tenant bloquea el embedding (X-Frame-Options / CSP).
-              Usa “Abrir SP”.
-            </div>
+        <div class="hero-panel">
+          <div class="hero-stat">
+            <strong>1</strong>
+            <span>Punto de entrada digital para comunicación operativa de D&amp;T</span>
           </div>
-
-          <!-- TAB: Monthly Release (Mock) -->
-          <div class="calPanel" id="cal-release" style="display:none;">
-            <div class="monthRow">
-              <span class="label">Mes:</span>
-              <input id="monthPickerRelease" type="month" value="2026-01" />
-              <span class="label">Vista:</span>
-              <span class="tag">Release / Testing / Freeze</span>
-            </div>
-
-            <div id="releaseBody"></div>
-
-            <div class="legend">
-              <span class="pill"><span class="dot"></span> Release / Deploy</span>
-              <span class="pill"><span class="dot dot2"></span> Testing / Validation</span>
-              <span class="pill"><span class="dot dot3"></span> Change Freeze</span>
-            </div>
+          <div class="hero-stat">
+            <strong>5</strong>
+            <span>Frentes principales de IT Operations visibles para el negocio</span>
           </div>
-
-          <!-- TAB: Windows Patches (Mock) -->
-          <div class="calPanel" id="cal-win" style="display:none;">
-            <div class="monthRow">
-              <span class="label">Mes:</span>
-              <input id="monthPickerWin" type="month" value="2026-01" />
-              <span class="label">Vista:</span>
-              <span class="tag">Non-Prod / Prod</span>
-            </div>
-
-            <div id="winBody"></div>
-
-            <div class="legend">
-              <span class="pill"><span class="dot"></span> Non-Prod</span>
-              <span class="pill"><span class="dot dot3"></span> Prod</span>
-            </div>
+          <div class="hero-stat">
+            <strong>24/7</strong>
+            <span>Visibilidad a releases, incidentes, responsables y colaboración</span>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="grid">
-      <section class="card">
-        <div class="cardHeader">
-          <h2>IT Operations Main</h2>
-          <p>Entrada principal: visibilidad rápida, accesos clave y navegación por capacidades.</p>
+    
+<section class="section-card" id="maintenance-window">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow">Maintenance</div>
+      <h2 class="section-title">Ventana de Mantenimiento Programada</h2>
+      <p class="section-subtitle">
+        Comunicación preventiva para informar al negocio y a las áreas de D&amp;T sobre ventanas de mantenimiento programadas,
+        alcance del impacto y duración estimada.
+      </p>
+    </div>
+    <div class="pill pill-alert">● Aviso preventivo</div>
+  </div>
+
+  <div class="panel-grid">
+    <!-- Información clave -->
+    <div class="stack">
+      <div class="info-card">
+        <h4>Portal afectado</h4>
+        <p class="muted">
+          <strong>Portal Externo 360</strong><br />
+          Servicios consultivos del portal podrían no estar disponibles durante la ventana.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h4>Fecha y horario</h4>
+        <p class="muted">
+          <strong>Domingo 19 de abril de 2026</strong><br />
+          05:00 am – 12:00 pm (7 horas)
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h4>Detalle del mantenimiento</h4>
+        <p class="muted">
+          Durante este periodo se actualizará el servidor
+          <strong>HEISMX1TRISBW03</strong>, por lo que los servicios del Portal Externo 360
+          podrían experimentar indisponibilidad intermitente.
+        </p>
+      </div>
+    </div>
+
+    <!-- Imagen del anuncio -->
+    <div class="stack">
+      <div class="info-card">
+        <h4>Comunicado visual</h4>
+        <p class="muted" style="margin-bottom:12px;">
+          Imagen utilizada en la comunicación oficial enviada a usuarios.
+        </p>
+        <img
+          src="image.png"
+          alt="Ventana de Mantenimiento Portal Externo 360"
+          style="
+            width:100%;
+            border-radius:18px;
+            border:1px solid rgba(0,0,0,0.08);
+            box-shadow:0 10px 22px rgba(5,59,42,0.08);
+          "
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Para dudas o seguimiento durante la ventana de mantenimiento,
+    favor de contactar a IT Operations mediante los canales habituales.
+  </div>
+</section>
+
+
+    <section class="section-card" id="release-calendar">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">Landing page</div>
+          <h2 class="section-title">Release Calendar</h2>
+          <p class="section-subtitle">
+            Vista integrada del calendario de releases para que las áreas de D&amp;T consulten cambios, ventanas y actividades relevantes desde un solo lugar.
+          </p>
+        </div>
+        <div class="pill pill-success">● Release visibility</div>
+      </div>
+
+      <div class="calendar-shell">
+        <div class="calendar-toolbar">
+          <div class="calendar-badge">📅 Release Calendar</div>
+          <a class="btn btn-primary" href="https://heiway.sharepoint.com/:x:/r/sites/ASDChangeManagement/Shared%20Documents/General/Release%20Calendar/HMEX%20DT%20Release%20Calendar%202026%20v2_2.xlsx?d=wb81c6a3e9bd046afb145d37a0a8f12dd&csf=1&web=1&e=xE6X9g" target="_blank" rel="noopener noreferrer">Abrir archivo</a>
+        </div>
+        <iframe
+          src="https://heiway.sharepoint.com/sites/ASDChangeManagement/_layouts/15/Doc.aspx?sourcedoc=%7BB81C6A3E-9BD0-46AF-B145-D37A0A8F12DD%7D&file=HMEX%20DT%20Release%20Calendar%202026%20v2_2.xlsx&action=embedview&wdHideHeaders=True&wdAllowInteractivity=False"
+          title="HMEX DT Release Calendar 2026"
+          loading="lazy"
+        ></iframe>
+        <div class="subtle-note">
+          Si el archivo no carga dentro del iframe, normalmente se debe a permisos del archivo o del sitio de SharePoint. En ese caso, usa el botón <strong>Abrir archivo</strong> o valida que el documento esté compartido con las personas que verán esta página.
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card" id="quick-access">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">Quick access</div>
+          <h2 class="section-title">Explora la información clave</h2>
+          <p class="section-subtitle">
+            Tres accesos principales para mantener a D&amp;T y a los equipos cross-functional alineados con lo más importante en operación, releases, comunicación y colaboración.
+          </p>
+        </div>
+      </div>
+
+      <div class="section-banner">
+        <div class="banner-card">
+          <strong>Communication model</strong>
+          <span>Una sola entrada para releases, alertas y estructura.</span>
+        </div>
+        <div class="banner-card">
+          <strong>Cross-functional ready</strong>
+          <span>Diseñado para colaboración con todas las áreas de D&amp;T.</span>
+        </div>
+        <div class="banner-card">
+          <strong>Vendor visibility</strong>
+          <span>Cada frente podrá mostrar vendors y cobertura asociada.</span>
+        </div>
+        <div class="banner-card">
+          <strong>Scalable</strong>
+          <span>Preparado para crecer a páginas dedicadas por torre.</span>
+        </div>
+      </div>
+
+      <div class="quick-nav">
+        <button class="nav-card updates" type="button" data-target="updates">
+          <div class="icon">↻</div>
+          <h3>Updates</h3>
+          <p>Cambios, protocolos, ajustes de calendario CAB y comunicaciones que requieren visibilidad o seguimiento.</p>
+          <span class="nav-link">Ver actualizaciones →</span>
+        </button>
+
+        <button class="nav-card alerts" type="button" data-target="alerts">
+          <div class="icon">!</div>
+          <h3>Alerts</h3>
+          <p>Espacio para incidentes P1 activos, historial P1, avisos críticos y comunicación operativa inmediata.</p>
+          <span class="nav-link">Ver alertas →</span>
+        </button>
+
+        <button class="nav-card resources" type="button" data-target="resources">
+          <div class="icon">⌘</div>
+          <h3>About us</h3>
+          <p>Conoce la estructura de IT Operations, sus responsables y la mejor forma de colaborar con cada frente.</p>
+          <span class="nav-link">Ver estructura →</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="section-card content-section active" id="updates">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">Updates</div>
+          <h2 class="section-title">Información relevante para el negocio</h2>
+          <p class="section-subtitle">
+            Espacio diseñado para publicar avisos importantes, cambios de proceso y recordatorios operativos visibles para las áreas de D&amp;T y sus equipos relacionados.
+          </p>
+        </div>
+        <div class="pill pill-success">● Sección activa</div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="stack">
+          <div class="info-card">
+            <h4>Actualización de fechas CAB</h4>
+            <p class="muted">Publica aquí ajustes de calendario, ventanas extraordinarias, fechas límite y alineaciones de governance.</p>
+          </div>
+          <div class="info-card">
+            <h4>Nuevos protocolos o lineamientos</h4>
+            <p class="muted">Comparte cambios en forma de trabajo, criterios de escalación, formatos esperados o nuevas rutas de atención.</p>
+          </div>
+          <div class="info-card">
+            <h4>Comunicados operativos</h4>
+            <p class="muted">Ideal para avisos preventivos, recordatorios de actividades críticas y mensajes de seguimiento a iniciativas de IT Operations.</p>
+          </div>
         </div>
 
-        <div class="cardBody">
+        <div class="stack">
+          <div class="mini-card">
+            <h4>Cómo se verá esta sección</h4>
+            <p class="muted">Puede conectarse a listas de SharePoint, cards HTML o noticias destacadas con filtro por fecha o frente.</p>
+          </div>
+          <div class="mini-card">
+            <h4>Formato sugerido</h4>
+            <p class="muted">Título del update · fecha · owner · impacto al negocio · acción requerida.</p>
+          </div>
+          <div class="mini-card">
+            <h4>Siguiente evolución</h4>
+            <p class="muted">Integrar feed dinámico con prioridad, fecha de vigencia y categorización por D&amp;T tower.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <!-- ===== EN ATENCIÓN ===== -->
-  <div class="panelBanner">
-  <b>En atención</b>
-  <span class="hint">visión rápida (run)</span>
-</div>
+    <section class="section-card content-section" id="alerts">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">Alerts</div>
+          <h2 class="section-title">Incidentes críticos y seguimiento P1</h2>
+          <p class="section-subtitle">
+            Un espacio visible para comunicar incidentes de alta prioridad, restauraciones, ventanas de afectación e histórico de P1 dentro del ecosistema D&amp;T.
+          </p>
+        </div>
+        <div class="pill pill-alert">▲ P1 communication hub</div>
+      </div>
 
-<div class="attnRow">
-  <a class="avisoCard" href="p1_view.html">
-    <div class="avisoIcon">
-      <img src="assets/img/Alert.png" alt="Críticos">
-    </div>
-    <div class="avisoText">
-      <p class="avisoTitle">Críticos</p>
-    </div>
-    <div class="avisoStat">
-      <div class="bigNum" id="criticosOpen">7</div>
-      <div class="miniHint">abiertos</div>
-    </div>
-  </a>
+      <div class="panel-grid">
+        <div class="stack">
+          <div class="info-card">
+            <h4>P1 activos</h4>
+            <p class="muted">Muestra aquí el estatus actual, impacto al negocio, hora de inicio, restauración y owner de coordinación.</p>
+          </div>
+          <div class="info-card">
+            <h4>Historial P1</h4>
+            <p class="muted">Sección para consulta rápida de incidentes relevantes pasados, su RCA y las acciones correctivas ejecutadas.</p>
+          </div>
+          <div class="info-card">
+            <h4>Alertamiento ejecutivo</h4>
+            <p class="muted">Diseñado para que áreas funcionales y equipos cross-functional tengan una fuente clara y consistente de información.</p>
+          </div>
+        </div>
 
-  <a class="avisoCard" href="itops_relevantes.html">
-    <div class="avisoIcon">
-      <img src="assets/img/relevantes.png" alt="Relevantes">
-    </div>
-    <div class="avisoText">
-      <p class="avisoTitle">Relevantes</p>
-    </div>
-    <div class="avisoStat">
-      <div class="bigNum" id="relevantesCount">3</div>
-      <div class="miniHint">esta semana</div>
-    </div>
-  </a>
+        <div class="stack">
+          <div class="mini-card">
+            <h4>Estructura recomendada para cada alerta</h4>
+            <p class="muted">Incidente · inicio · restauración · duración · impacto · sistema afectado · RCA.</p>
+          </div>
+          <div class="mini-card">
+            <h4>Uso esperado</h4>
+            <p class="muted">Consulta rápida durante incidentes y referencia posterior para análisis de recurrencia y comunicación al negocio.</p>
+          </div>
+          <div class="mini-card">
+            <h4>Siguiente evolución</h4>
+            <p class="muted">Agregar cards dinámicas, severidad visual, filtros por fecha y un histórico consultable por incident number.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <a class="avisoCard" href="notices_view.html">
-    <div class="avisoIcon">
-      <img src="assets/img/Notice.png" alt="Notificaciones">
-    </div>
-    <div class="avisoText">
-      <p class="avisoTitle">Notificaciones</p>
-    </div>
-    <div class="avisoStat">
-      <div class="bigNum" id="notifs">5</div>
-      <div class="miniHint">nuevas</div>
-    </div>
-  </a>
-</div>
+    <section class="section-card content-section" id="resources">
+      <div class="section-header">
+        <div>
+          <div class="eyebrow">About us</div>
+          <h2 class="section-title">Estructura principal de IT Operations</h2>
+          <p class="section-subtitle">
+            Referencia rápida para ayudar a cada área de D&amp;T y a los equipos cross-functional a entender quién es quién, qué hace cada frente, cómo colaborar mejor entre equipos y dónde consultar información de vendors por frente.
+          </p>
+        </div>
+        <div class="pill pill-gold">● Collaboration ready</div>
+      </div>
 
-  
-  <!-- ===== CAPACIDADES / HERRAMIENTAS ===== -->
-  <div class="panelBanner" style="margin-top:14px;">
-    <b>Capacidades</b>
-    <span class="hint">gobierno / soporte</span>
+      <div class="tower-grid">
+        <button class="tower-card" type="button" onclick="openFrontPage('https://heiway.sharepoint.com/:u:/r/sites/AMS-Commerce/Shared%20Documents/ComsModel/AMS_Main.html?csf=1&web=1&e=MfBxgq')">
+          <div class="tower-top"><span class="tower-dot"></span><h4>AMS</h4></div>
+          <p class="muted">Acompañamiento funcional y operativo a aplicaciones clave del negocio, continuidad, incidencias, mejoras y acceso a información del frente AMS.</p>
+        </button>
+
+        <button class="tower-card" type="button" onclick="openFrontPage('#')">
+          <div class="tower-top"><span class="tower-dot"></span><h4>SAP Roles y Perfiles</h4></div>
+          <p class="muted">Gestión de accesos, perfiles, autorizaciones, habilitación operativa y frente de observability asociado a la capa SAP / roles.</p>
+        </button>
+
+        <button class="tower-card" type="button" onclick="openFrontPage('#')">
+          <div class="tower-top"><span class="tower-dot"></span><h4>Infraestructura</h4></div>
+          <p class="muted">Conectividad, soporte base, EUD / FSS, redes y capacidades necesarias para mantener la operación estable.</p>
+        </button>
+
+        <button class="tower-card" type="button" onclick="openFrontPage('#')">
+          <div class="tower-top"><span class="tower-dot"></span><h4>RPA</h4></div>
+          <p class="muted">Automatización de procesos, reducción de tareas repetitivas y habilitación de eficiencias operativas para el negocio.</p>
+        </button>
+
+        <button class="tower-card" type="button" onclick="openFrontPage('#')">
+          <div class="tower-top"><span class="tower-dot"></span><h4>Service Management</h4></div>
+          <p class="muted">Seguimiento con proveedores, visibilidad de compromisos, accountability y alineación de ejecución.</p>
+        </button>
+      </div>
+
+      <div class="panel-grid" style="margin-bottom: 22px;">
+        <div class="info-card">
+          <h4>Información y vendors por frente</h4>
+          <p class="muted">En la página de información de cada frente queremos que el usuario pueda entender el alcance del servicio, consultar updates relevantes, ver cambios mayores y ubicar de forma explícita la información de vendors asociados.</p>
+        </div>
+        <div class="info-card">
+          <h4>AMS Main</h4>
+          <p class="muted">La página de AMS funcionará como espacio dedicado para información de AMS, updates y major updates.</p>
+          <p class="muted" style="margin-top:10px;"><a href="https://heiway.sharepoint.com/:u:/r/sites/AMS-Commerce/Shared%20Documents/ComsModel/AMS_Main.html?csf=1&web=1&e=MfBxgq" target="_blank" rel="noopener noreferrer" style="color: var(--green-800); font-weight: 800;">Abrir AMS_Main →</a></p>
+          <p class="muted" style="margin-top:8px;">También puedes entrar desde la card principal de AMS en la sección About us.</p>
+        </div>
+      </div>
+
+      <div class="directory-shell">
+        <div class="directory-head">
+          <div>
+            <div class="eyebrow">Directory</div>
+            <h3 class="section-title" style="font-size: 1.65rem; margin-bottom: 6px;">Directorio de IT Operations</h3>
+            <p class="section-subtitle">Vista tipo organigrama para que otras áreas de D&amp;T identifiquen responsables y puedan copiar su dirección de correo dando clic sobre su nombre.</p>
+          </div>
+          <div class="pill pill-success">Copy email enabled</div>
+        </div>
+
+        <div class="org-wrap">
+          <div class="org-chart">
+            <div class="org-level-top">
+              <article class="org-card manager">
+                <div class="org-card-header">
+                  <div>
+                    <h4><button class="name-link copy-email" type="button" data-email="Martin.Martinez@heineken.com"><span class="mail-dot">✉</span> Martin Martinez</button></h4>
+                    <div class="role">IT Ops Manager</div>
+                  </div>
+                  <span class="team-link">Leadership</span>
+                </div>
+                <div class="contact-meta">Responsable general de IT Operations dentro del ecosistema D&amp;T.</div>
+              </article>
+            </div>
+
+            <div class="org-level-bottom">
+              <article class="org-card">
+                <div class="org-card-header">
+                  <div>
+                    <h4><button class="name-link copy-email" type="button" data-email="elvita.gloria@heineken.com"><span class="mail-dot">✉</span> Elvita Gloria Castillo</button></h4>
+                    <div class="role">AMS (Application Management)</div>
+                  </div>
+                  <span class="team-link">AMS</span>
+                </div>
+                <div class="sub-team">
+                  <div class="sub-item">
+                    <span class="sub-label">AMS Backoffice</span>
+                    <button class="name-link copy-email" type="button" data-email="MariaEdith.Villarreal@heineken.com"><span class="mail-dot">✉</span> Maria Edith Villarreal</button>
+                  </div>
+                  <div class="sub-item">
+                    <span class="sub-label">AMS Supply Chain</span>
+                    <button class="name-link copy-email" type="button" data-email="almalilia.moreno@heineken.com"><span class="mail-dot">✉</span> Alma Lilia Moreno</button>
+                  </div>
+                  <div class="sub-item">
+                    <span class="sub-label">AMS Commerce</span>
+                    <button class="name-link copy-email" type="button" data-email="Kevin.Rivera@heineken.com"><span class="mail-dot">✉</span> Jerome Rivera</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="org-card">
+                <div class="org-card-header">
+                  <div>
+                    <h4><button class="name-link copy-email" type="button" data-email="rodolfo.sanchez@heineken.com"><span class="mail-dot">✉</span> Cesar Sanchez</button></h4>
+                    <div class="role">RPA (Robots y Automatizaciones)</div>
+                  </div>
+                  <span class="team-link">RPA</span>
+                </div>
+                <div class="sub-team">
+                  <div class="sub-item">
+                    <span class="sub-label">RPA</span>
+                    <button class="name-link copy-email" type="button" data-email="HectorMauricio.GarciaMolina@heineken.com"><span class="mail-dot">✉</span> Hector Mauricio Garcia Molina</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="org-card">
+                <div class="org-card-header">
+                  <div>
+                    <h4><button class="name-link copy-email" type="button" data-email="Melvin.RodriguezMartinez@heineken.com"><span class="mail-dot">✉</span> Melvin Rodriguez Martinez</button></h4>
+                    <div class="role">SAP, Roles y Perfiles</div>
+                  </div>
+                  <span class="team-link">SAP / Access</span>
+                </div>
+                <div class="sub-team">
+                  <div class="sub-item">
+                    <span class="sub-label">Roles y Perfiles</span>
+                    <button class="name-link copy-email" type="button" data-email="orlandotadeo.hernandez@heineken.com"><span class="mail-dot">✉</span> Orlando Tadeo Hernandez</button>
+                  </div>
+                  <div class="sub-item">
+                    <span class="sub-label">Observability</span>
+                    <div class="empty-slot">Vacante / N/A</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="org-card">
+                <div class="org-card-header">
+                  <div>
+                    <h4>Infraestructura</h4>
+                    <div class="role">Vacante / N/A</div>
+                  </div>
+                  <span class="team-link">Infrastructura</span>
+                </div>
+                <div class="sub-team">
+                  <div class="sub-item">
+                    <span class="sub-label">EUD y FSS</span>
+                    <button class="name-link copy-email" type="button" data-email="Guillermo.Canaan@heineken.com"><span class="mail-dot">✉</span> Guillermo Canaan</button>
+                  </div>
+                  <div class="sub-item">
+                    <span class="sub-label">Redes</span>
+                    <button class="name-link copy-email" type="button" data-email="rodrigomaximiliano.villanueva@heineken.com"><span class="mail-dot">✉</span> Rodrigo Maximiliano Villanueva</button>
+                  </div>
+                  <div class="sub-item">
+                    <span class="sub-label">Infra SIX</span>
+                    <div class="empty-slot">Vacante / N/A</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="org-card">
+                <div class="org-card-header">
+                  <div>
+                    <h4><button class="name-link copy-email" type="button" data-email="JuanGustavo.MelladoMiranda@heineken.com"><span class="mail-dot">✉</span> Juan Gustavo Mellado Miranda</button></h4>
+                    <div class="role">Service Management</div>
+                  </div>
+                  <span class="team-link">Vendors</span>
+                </div>
+                <div class="contact-meta">Gestión de proveedores, seguimiento a compromisos, coordinación y visibilidad de ejecución.</div>
+              </article>
+              <div class="sub-item">
+                    <span class="sub-label">SIX IT Infrastructure Coordinator</span>
+                    <button class="name-link copy-email" type="button" data-email="Valeria.AguirreVillalon@heineken.com"><span class="mail-dot">✉</span> Valeria Aguirre Villalon</button>
+                  </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="directory-footer">
+          Da clic sobre cualquier nombre para copiar su correo al portapapeles. Esta base puede crecer después con foto, Teams link, cobertura funcional, vendors, SLAs y quick actions.
+        </div>
+      </div>s
+
+      <div class="footer-note">
+        Esta estructura puede crecer después con owners, formularios, governance, links rápidos, coverage por torre y recursos descargables.
+      </div>
+    </section>
   </div>
 
-  <div class="avisoGrid4">
-    <a class="avisoCard" href="observability_view.html">
-      <div class="avisoIcon">
-        <img src="assets/img/observability.png" alt="Observability">
-      </div>
-      <div class="avisoText">
-        <p class="avisoTitle">Observability</p>
-        <p class="avisoSub">Dashboards y telemetría</p>
-      </div>
-      <div class="avisoStat">
-        <div class="bigNum" id="obs">12</div>
-        <div class="miniHint">dashboards</div>
-      </div>
-    </a>
-
-    <a class="avisoCard" href="itops_tasks.html">
-      <div class="avisoIcon">
-        <img src="assets/img/Calendar.png" alt="Backlog">
-      </div>
-      <div class="avisoText">
-        <p class="avisoTitle">Backlog</p>
-        <p class="avisoSub">Tasks y seguimiento</p>
-      </div>
-      <div class="avisoStat">
-        <div class="bigNum" id="backlogCount">—</div>
-        <div class="miniHint">abiertos</div>
-      </div>
-    </a>
-
-    <a class="avisoCard" href="vendors_view.html">
-      <div class="avisoIcon">
-        <img src="assets/img/vendors.png" alt="Vendors">
-      </div>
-      <div class="avisoText">
-        <p class="avisoTitle">Vendors</p>
-        <p class="avisoSub">Gestión de proveedores</p>
-      </div>
-      <div class="avisoStat">
-        <div class="bigNum" id="vendors">6</div>
-        <div class="miniHint">activos</div>
-      </div>
-    </a>
-
-    <a class="avisoCard" href="applications_view.html">
-      <div class="avisoIcon">
-        <img src="assets/img/vendors.png" alt="Applications">
-      </div>
-      <div class="avisoText">
-        <p class="avisoTitle">Applications</p>
-        <p class="avisoSub">Owners y accesos</p>
-      </div>
-      <div class="avisoStat">
-        <div class="bigNum" id="apps">18</div>
-        <div class="miniHint">apps</div>
-      </div>
-    </a>
-  </div>
-</div>
-      </section>
-
-      <aside class="rightGrid">
-  <section class="card">
-    <div class="cardHeader">
-      <h2>Torres / Owners</h2>
-      <p>Accesos rápidos por disciplina.</p>
-    </div>
-
-    <div class="sleekList">
-      <div class="sleekRow">
-        <div class="t">AMS</div>
-        <a class="btn" href="ams_view.html">Abrir</a>
-      </div>
-
-      <div class="sleekRow">
-        <div class="t">Infraestructura</div>
-        <a class="btn" href="infra_view.html">Abrir</a>
-      </div>
-
-      <div class="sleekRow">
-        <div class="t">SAP, Roles &amp; Perfiles</div>
-        <a class="btn" href="sap_view.html">Abrir</a>
-      </div>
-
-
-
-      <div class="sleekRow">
-        <div class="t">RPA &amp; Automation</div>
-        <a class="btn" href="rpa_view.html">Abrir</a>
-      </div>
-
-      <div class="sleekRow">
-        <div class="t">Service Management</div>
-        <a class="btn" href="service_mgmt_view.html">Abrir</a>
-      </div>
-    </div>
-  </section>
-</aside>
-    </div>
-  </div>
+  <div id="copyToast" class="copy-toast" aria-live="polite">Correo copiado</div>
 
   <script>
-    // ===== Splash fade =====
-    (function(){
-      const splashImgUrl = "assets/img/fondo0.png";
-      const HOLD_MS = 650;
+    const navCards = document.querySelectorAll('.nav-card');
+    const sections = document.querySelectorAll('.content-section');
+    const copyButtons = document.querySelectorAll('.copy-email');
+    const copyToast = document.getElementById('copyToast');
+    let toastTimer;
 
-      const img = new Image();
-      img.onload = () => setTimeout(() => document.body.classList.add("reveal"), HOLD_MS);
-      img.onerror = () => document.body.classList.add("reveal");
-      img.src = splashImgUrl;
+    function showToast(message) {
+      copyToast.textContent = message;
+      copyToast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        copyToast.classList.remove('show');
+      }, 1800);
+    }
 
-      setTimeout(() => document.body.classList.add("reveal"), 3500);
-    })();
+    function openFrontPage(url) {
+      if (!url || url === '#') {
+        showToast('Página del frente pendiente de publicación');
+        return;
+      }
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
 
-    // ===== SharePoint/Excel Online links (from calendars_view.html) =====
-    const spDefaultLink =
-      "https://heiway.sharepoint.com/:x:/r/sites/ASDChangeManagement/_layouts/15/Doc.aspx?sourcedoc=%7BB81C6A3E-9BD0-46AF-B145-D37A0A8F12DD%7D&file=HMEX%20DT%20Release%20Calendar%202026%20v2_2.xlsx&action=default&mobileredirect=true";
-    const spEmbedLink = spDefaultLink.replace("action=default", "action=embedview");
+    function activateSection(targetId) {
+      sections.forEach(section => {
+        section.classList.toggle('active', section.id === targetId);
+      });
 
-    const spFrame = document.getElementById("spFrame");
-    const openSpLink = document.getElementById("openSpLink");
-    const reloadFrame = document.getElementById("reloadFrame");
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
 
-    openSpLink.href = spDefaultLink;
-    spFrame.src = spEmbedLink;
+    async function copyEmail(email) {
+      try {
+        await navigator.clipboard.writeText(email);
+        showToast(`Correo copiado: ${email}`);
+      } catch (error) {
+        const tempInput = document.createElement('input');
+        tempInput.value = email;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showToast(`Correo copiado: ${email}`);
+      }
+    }
 
-    reloadFrame.addEventListener("click", (e) => {
-      e.preventDefault();
-      const current = spFrame.src;
-      spFrame.src = "";
-      setTimeout(() => (spFrame.src = current), 50);
+    navCards.forEach(card => {
+      card.addEventListener('click', () => {
+        activateSection(card.dataset.target);
+      });
     });
 
-    // ===== Calendar Tabs on landing =====
-    const segBtns = document.querySelectorAll(".segBtn");
-    const calPanels = {
-      sp: document.getElementById("cal-sp"),
-      release: document.getElementById("cal-release"),
-      win: document.getElementById("cal-win"),
-    };
-
-    function setCalTab(key){
-      segBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === key));
-      Object.entries(calPanels).forEach(([k, el]) => {
-        el.style.display = (k === key) ? "" : "none";
+    copyButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        copyEmail(button.dataset.email);
       });
-    }
-    segBtns.forEach(btn => btn.addEventListener("click", () => setCalTab(btn.dataset.tab)));
-
-    // ===== Hide empty cells toggle (mock calendars only) =====
-    const toggle = document.getElementById("toggleEmpty");
-    function applyEmptyMode(){
-      const releaseWrap = document.getElementById("releaseBody");
-      const winWrap = document.getElementById("winBody");
-      if (releaseWrap) releaseWrap.classList.toggle("hideEmpty", toggle.checked);
-      if (winWrap) winWrap.classList.toggle("hideEmpty", toggle.checked);
-    }
-    toggle.addEventListener("change", applyEmptyMode);
-
-    // ===== Mock data + Month picker rendering =====
-    // We’ll render an actual month grid (Sun-Sat) and place mocked “events” (Release/Testing/Freeze, NonProd/Prod).
-    const releaseEvents = [
-      // Month format: YYYY-MM
-      { ym:"2026-01", day: 8,  type:"t", label:"Testing" },
-      { ym:"2026-01", day: 15, type:"r", label:"Deploy" },
-      { ym:"2026-01", day: 22, type:"f", label:"Freeze" },
-
-      { ym:"2026-02", day: 5,  type:"t", label:"Testing" },
-      { ym:"2026-02", day: 12, type:"r", label:"Deploy" },
-      { ym:"2026-02", day: 19, type:"f", label:"Freeze" },
-
-      { ym:"2026-03", day: 5,  type:"t", label:"Testing" },
-      { ym:"2026-03", day: 12, type:"r", label:"Deploy" },
-      { ym:"2026-03", day: 26, type:"f", label:"Freeze" },
-    ];
-
-    const winEvents = [
-      { ym:"2026-01", day: 13, type:"r", label:"Non-Prod" },
-      { ym:"2026-01", day: 20, type:"f", label:"Prod" },
-
-      { ym:"2026-02", day: 10, type:"r", label:"Non-Prod" },
-      { ym:"2026-02", day: 17, type:"f", label:"Prod" },
-
-      { ym:"2026-03", day: 10, type:"r", label:"Non-Prod" },
-      { ym:"2026-03", day: 17, type:"f", label:"Prod" },
-    ];
-
-    function monthNameES(monthIndex){
-      // monthIndex: 0-11
-      const names = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-      return names[monthIndex] || "";
-    }
-
-    function buildMonthTable({ ym, title, events, headerLabel }){
-      const [Y, M] = ym.split("-").map(Number);
-      const first = new Date(Y, M-1, 1);
-      const last  = new Date(Y, M, 0); // last day of month
-      const daysInMonth = last.getDate();
-      const startDow = first.getDay(); // 0=Sun
-
-      // Map events by day
-      const evMap = new Map();
-      events.filter(e => e.ym === ym).forEach(e => {
-        if (!evMap.has(e.day)) evMap.set(e.day, []);
-        evMap.get(e.day).push(e);
-      });
-
-      // Build rows (Sun-Sat)
-      const rows = [];
-      let day = 1;
-      let week = 0;
-
-      while (day <= daysInMonth){
-        const tds = [];
-        for (let dow = 0; dow < 7; dow++){
-          if (week === 0 && dow < startDow){
-            tds.push(`<td class="empty"></td>`);
-          } else if (day > daysInMonth){
-            tds.push(`<td class="empty"></td>`);
-          } else {
-            const chips = (evMap.get(day) || []).map(ev => {
-              const cls = ev.type === "r" ? "chip r" : (ev.type === "t" ? "chip t" : "chip f");
-              return `<div class="${cls}">${ev.label}</div>`;
-            }).join("");
-            tds.push(`
-              <td>
-                <div class="calDayNum"><span>${day}</span></div>
-                ${chips}
-              </td>
-            `);
-            day++;
-          }
-        }
-        rows.push(`<tr>${tds.join("")}</tr>`);
-        week++;
-      }
-
-      return `
-        <table class="calendar">
-          <thead>
-            <tr>
-              <th style="min-width:220px;">
-                ${headerLabel}<br>
-                <span style="font-size:12px; font-weight:800; color:rgba(0,0,0,.62);">
-                  ${title}
-                </span>
-              </th>
-              <th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="mutedCell"><b>${monthNameES(M-1)} ${Y}</b></td>
-              ${(() => {
-                // First row is handled by the main loop (we want a full grid),
-                // but we keep this left label column fixed per row:
-                // We'll create a table where first column is "notes", and the 7 cols are day grid.
-                // To keep it simple, we’ll generate rows again but with first column notes.
-                return "";
-              })()}
-            </tr>
-          </tbody>
-        </table>
-      `;
-    }
-
-    // We actually want the left column per row (like your mock excel).
-    // So we'll build our own with a left "row label" column:
-    function renderMonthExcelLike({ mountId, ym, events, mode }){
-      const mount = document.getElementById(mountId);
-      if (!mount) return;
-
-      const [Y, M] = ym.split("-").map(Number);
-      const first = new Date(Y, M-1, 1);
-      const last  = new Date(Y, M, 0);
-      const daysInMonth = last.getDate();
-      const startDow = first.getDay(); // 0=Sun
-
-      const evMap = new Map();
-      events.filter(e => e.ym === ym).forEach(e => {
-        if (!evMap.has(e.day)) evMap.set(e.day, []);
-        evMap.get(e.day).push(e);
-      });
-
-      const rowLabels = (mode === "release")
-        ? ["Ventana (plan)","Testing / Validación","Deploy / Release","Freeze / Restricción"]
-        : ["Ventana (plan)","Non-Prod","Prod","Seguimiento"];
-
-      // Build a 6-week grid max
-      const weeks = [];
-      let day = 1;
-      for (let w = 0; w < 6; w++){
-        const cells = [];
-        for (let dow = 0; dow < 7; dow++){
-          if (w === 0 && dow < startDow){
-            cells.push({ empty:true });
-          } else if (day > daysInMonth){
-            cells.push({ empty:true });
-          } else {
-            cells.push({ day, events: evMap.get(day) || [] });
-            day++;
-          }
-        }
-        weeks.push(cells);
-        if (day > daysInMonth) break;
-      }
-
-      // Build table html with each week as a row, and left label column changes per row label,
-      // but we’ll show the same grid repeated per label row (Excel-like “bands”):
-      // This mimics your original sheet style.
-      const head = `
-        <thead>
-          <tr>
-            <th>${mode === "release" ? "RELEASE CALENDAR (Mock)" : "WINDOWS PATCHES (Mock)"}</th>
-            <th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th>
-          </tr>
-        </thead>
-      `;
-
-      const bodyRows = rowLabels.map((label, idx) => {
-        // choose which week to show per band (loop if fewer weeks)
-        const week = weeks[idx % weeks.length];
-        const tds = week.map(cell => {
-          if (cell.empty) return `<td class="empty"></td>`;
-          const chips = cell.events.map(ev => {
-            const cls = ev.type === "r" ? "chip r" : (ev.type === "t" ? "chip t" : "chip f");
-            return `<div class="${cls}">${ev.label}</div>`;
-          }).join("");
-          return `
-            <td>
-              <div class="calDayNum"><span>${cell.day}</span></div>
-              ${chips}
-            </td>
-          `;
-        }).join("");
-
-        const left = (idx === 0)
-          ? `<td class="mutedCell"><b>${monthNameES(M-1)} ${Y}</b><br>${label}</td>`
-          : `<td class="mutedCell">${label}</td>`;
-
-        return `<tr>${left}${tds}</tr>`;
-      }).join("");
-
-      mount.innerHTML = `
-        <table class="calendar">
-          ${head}
-          <tbody>
-            ${bodyRows}
-          </tbody>
-        </table>
-      `;
-
-      // apply empty toggle class
-      applyEmptyMode();
-    }
-
-    // Init month pickers
-    const monthPickerRelease = document.getElementById("monthPickerRelease");
-    const monthPickerWin = document.getElementById("monthPickerWin");
-
-    function renderRelease(){
-      renderMonthExcelLike({
-        mountId:"releaseBody",
-        ym: monthPickerRelease.value,
-        events: releaseEvents,
-        mode: "release"
-      });
-    }
-    function renderWin(){
-      renderMonthExcelLike({
-        mountId:"winBody",
-        ym: monthPickerWin.value,
-        events: winEvents,
-        mode: "win"
-      });
-    }
-
-    monthPickerRelease.addEventListener("change", renderRelease);
-    monthPickerWin.addEventListener("change", renderWin);
-
-    // First render
-    renderRelease();
-    renderWin();
-    applyEmptyMode();
-
-    // Optional: if user selects a mock tab, hide SP controls (Reload/Open) still okay,
-    // but you can keep them visible. If you want, uncomment to disable buttons for mock tabs:
-    // function syncSpButtons(tab){
-    //   const show = (tab === "sp");
-    //   openSpLink.style.display = show ? "" : "none";
-    //   reloadFrame.style.display = show ? "" : "none";
-    // }
-    // function setCalTab(key){ ... syncSpButtons(key); }
-
+    });
   </script>
-
-  <div class="helpPanel" id="helpPanel" aria-hidden="true">
-  <div class="helpHeader">
-    <b>Asistente (Mock)</b>
-    <button class="helpClose" id="helpClose">✖</button>
-  </div>
-  <div class="helpBody">
-    <div class="helpBubble">
-      <b>Ask me anything</b><br>
-      Elige una opción para ver una respuesta sintética y un link directo.
-    </div>
-
-    <div class="helpActions">
-      <button class="helpQ" data-q="backlog">¿Cuál es el backlog?</button>
-      <button class="helpQ" data-q="criticos">¿Qué críticos hay?</button>
-      <button class="helpQ" data-q="ams">¿Qué es AMS?</button>
-    </div>
-
-    <div class="helpAnswer" id="helpAnswer"></div>
-  </div>
-</div>
-
-<div class="helpFab" id="helpFab" title="Ayuda / Asistente">💬</div>
-
-<script>
-  // ===== Help / Chatbot mock =====
-  (function(){
-    const panel = document.getElementById("helpPanel");
-    const fab = document.getElementById("helpFab");
-    const closeBtn = document.getElementById("helpClose");
-    const answer = document.getElementById("helpAnswer");
-    const qs = document.querySelectorAll(".helpQ");
-
-    function open(){
-      panel.style.display = "block";
-      panel.setAttribute("aria-hidden","false");
-    }
-    function close(){
-      panel.style.display = "none";
-      panel.setAttribute("aria-hidden","true");
-      answer.style.display = "none";
-      answer.innerHTML = "";
-    }
-    fab.addEventListener("click", () => {
-      const isOpen = panel.style.display === "block";
-      isOpen ? close() : open();
-    });
-    closeBtn.addEventListener("click", close);
-
-    const responses = {
-      backlog: {
-        text: "El backlog es la lista de tasks operativas y seguimiento (run). Ahí puedes filtrar y actualizar comentarios.",
-        href: "itops_tasks.html",
-        cta: "Ir a Backlog"
-      },
-      criticos: {
-        text: "Críticos agrupa los temas de prioridad alta en curso (P1/P2 o alto impacto), para visibilidad y control.",
-        href: "criticos_view.html",
-        cta: "Ver Críticos"
-      },
-      ams: {
-        text: "AMS (Application Management Services) cubre la operación de aplicaciones: tickets, problems, mejoras, cambios y coordinación con vendors.",
-        href: "ams_view.html",
-        cta: "Abrir AMS"
-      }
-    };
-
-    qs.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const key = btn.dataset.q;
-        const r = responses[key];
-        answer.innerHTML = `
-          <div>${r.text}</div>
-          <a class="btn" href="${r.href}">${r.cta}</a>
-        `;
-        answer.style.display = "block";
-      });
-    });
-
-    // ESC closes panel
-    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape") close(); });
-  })();
-</script>
 </body>
 </html>
